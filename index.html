@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy Povijest - 5. Razred</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Scoreboard sa 4 Grupe -->
+    <header class="bg-slate-800 border-b border-amber-500/30 p-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-bold text-amber-400 tracking-wider">POVIJEST JEOPARDY</h1>
+                <p class="text-xs text-slate-400">Ponavljanje gradiva 5. razreda</p>
+            </div>
+
+            <!-- Tablica s 4 Grupe -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto">
+                <!-- Ekipa A -->
+                <div class="bg-slate-900 px-3 py-2 rounded-lg border border-blue-500/50 text-center">
+                    <span class="text-xs font-bold text-blue-400 block uppercase">Grupa A</span>
+                    <span id="scoreA" class="text-xl font-extrabold text-amber-400">0</span>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="changeTeamScore('A', 100)" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">+100</button>
+                        <button onclick="changeTeamScore('A', -100)" class="bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">-100</button>
+                    </div>
+                </div>
+                <!-- Ekipa B -->
+                <div class="bg-slate-900 px-3 py-2 rounded-lg border border-emerald-500/50 text-center">
+                    <span class="text-xs font-bold text-emerald-400 block uppercase">Grupa B</span>
+                    <span id="scoreB" class="text-xl font-extrabold text-amber-400">0</span>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="changeTeamScore('B', 100)" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">+100</button>
+                        <button onclick="changeTeamScore('B', -100)" class="bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">-100</button>
+                    </div>
+                </div>
+                <!-- Ekipa C -->
+                <div class="bg-slate-900 px-3 py-2 rounded-lg border border-purple-500/50 text-center">
+                    <span class="text-xs font-bold text-purple-400 block uppercase">Grupa C</span>
+                    <span id="scoreC" class="text-xl font-extrabold text-amber-400">0</span>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="changeTeamScore('C', 100)" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">+100</button>
+                        <button onclick="changeTeamScore('C', -100)" class="bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">-100</button>
+                    </div>
+                </div>
+                <!-- Ekipa D -->
+                <div class="bg-slate-900 px-3 py-2 rounded-lg border border-rose-500/50 text-center">
+                    <span class="text-xs font-bold text-rose-400 block uppercase">Grupa D</span>
+                    <span id="scoreD" class="text-xl font-extrabold text-amber-400">0</span>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="changeTeamScore('D', 100)" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">+100</button>
+                        <button onclick="changeTeamScore('D', -100)" class="bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-0.5 rounded text-xs font-bold border border-slate-700">-100</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="resetGame()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-2 rounded transition shadow">
+                Reset
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 flex flex-col justify-center">
+        <div id="board" class="grid grid-cols-4 gap-3 w-full my-auto"></div>
+    </main>
+
+    <!-- Modal s Pitanjem -->
+    <div id="questionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border-2 border-amber-500 rounded-xl max-w-2xl w-full p-6 shadow-2xl relative flex flex-col gap-6">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <span id="modalCategory" class="text-amber-400 font-bold uppercase tracking-wider text-sm">Kategorija</span>
+                <span id="modalPoints" class="bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full text-sm border border-amber-500/30">100 Bodova</span>
+            </div>
+
+            <div class="py-2">
+                <h2 id="modalQuestion" class="text-xl md:text-2xl font-medium text-slate-100 leading-relaxed text-center"></h2>
+            </div>
+
+            <div id="answerBox" class="hidden bg-slate-900 p-4 rounded-lg border border-slate-700 text-amber-300 text-center font-medium text-lg"></div>
+
+            <div id="actionButtons" class="flex justify-center gap-4">
+                <button onclick="showAnswer()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded transition">Prikaži odgovor</button>
+            </div>
+
+            <!-- Dodjela bodova određenoj grupi -->
+            <div id="scoreButtons" class="hidden flex flex-col gap-3 border-t border-slate-700 pt-4">
+                <p class="text-xs text-center text-slate-400 uppercase tracking-wider font-bold">Dodijeli bodove grupi:</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <button onclick="awardPoints('A')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded text-sm transition">Grupa A (+)</button>
+                    <button onclick="awardPoints('B')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded text-sm transition">Grupa B (+)</button>
+                    <button onclick="awardPoints('C')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded text-sm transition">Grupa C (+)</button>
+                    <button onclick="awardPoints('D')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded text-sm transition">Grupa D (+)</button>
+                </div>
+                <button onclick="closeModal()" class="mt-2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-1.5 rounded text-xs transition">Zatvori bez bodova</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                category: "Uvod u povijest",
+                questions: [
+                    { points: 100, question: "Što je povijest?", answer: "Povijest je znanost koja otkriva, proučava i objašnjava prošlost čovjeka od njegova postanka do danas." },
+                    { points: 200, question: "Koga nazivamo 'ocem povijesti'?", answer: "Herodot." },
+                    { points: 300, question: "Na koja se dva razdoblja dijeli cijela ljudska prošlost? Prapovijest završava otkrićem...?", answer: "Dijeli se na prapovijest i povijest. Prapovijest završava otkrićem pisma (i vatre u ranijim fazama razvitka)." },
+                    { points: 400, question: "Kojem stoljeću i tisućljeću pripadaju godine: 2450. g. pr. Kr. i 1570. g.?", answer: "2450. g. pr. Kr. = 25. stoljeće pr. Kr. i 3. tisućljeće pr. Kr.\n1570. g. = 16. stoljeće i 2. tisućljeće." },
+                    { points: 500, question: "Navedi tri vrste povijesnih izvora i ustanove u kojima se danas čuvaju.", answer: "Vrste: Pisani, materijalni, slikovni (i usmeni).\nUstanove: Muzeji, arhivi, knjižnice, fonoteke." }
+                ]
+            },
+            {
+                category: "Prapovijest i prve civilizacije",
+                questions: [
+                    { points: 100, question: "Na koja se dva razdoblja dijeli prapovijest? Gdje su pronađeni ostaci najstarijeg čovjekovog pretka?", answer: "Dijeli se na kameno i metalno doba. Ostaci najstarijeg pretka pronađeni su u Africi." },
+                    { points: 200, question: "Koji se poznati i najveći grad nalazio na području Mezopotamije, smještene između rijeka Eufrat i Tigris?", answer: "Babilon." },
+                    { points: 300, question: "Kako se zvala biljka od koje su Egipćani izrađivali materijal za pisanje i kako se zvao njihov vladar s neograničenom moći?", answer: "Biljka: Papirus.\nVladar: Faraon." },
+                    { points: 400, question: "Kako se zove poznato nalazište neandertalca na tlu Hrvatske, a kako najpoznatija kultura iz vremena bakrenog doba?", answer: "Nalazište: Hušnjakovo brdo kod Krapine.\nKultura: Vučedolska kultura." },
+                    { points: 500, question: "Kada je nastalo prvo pismo i na kojem području? Koji narod je prvi razvio glasovno pismo?", answer: "Prvo pismo (klinasto): oko 3500. g. pr. n. e. u Sumeru (Mezopotamija).\nGlasovno pismo: Feničani." }
+                ]
+            },
+            {
+                category: "Stari Grci",
+                questions: [
+                    { points: 100, question: "Kako su stari Grci nazivali svoju zemlju, a kako sami sebe?", answer: "Zemlju su nazivali Helada, a sebe Heleni." },
+                    { points: 200, question: "Kako se zovu mali grčki gradovi-države, te koja su dva takva grada bila najmoćnija u staroj Grčkoj?", answer: "Gradovi-države: Polis.\nNajmoćniji: Atena i Sparta." },
+                    { points: 300, question: "Kako se zovu čuvene igre održavane svake četiri godine u čast boga Zeusa i tko se smatra 'ocem povijesti'?", answer: "Igre: Olimpijske igre.\nOtac povijesti: Herodot." },
+                    { points: 400, question: "Što je kolonija? Navedi jednu grčku koloniju na našoj obali.", answer: "Kolonija je naseobina koju neki narod osniva izvan svoje domovine.\nPrimjeri na obali: Vis (Issa), Faros (Stari Grad na Hvaru), Korkyra Melaina (Korčula)." },
+                    { points: 500, question: "Kako se zvalo razdoblje velikog razvoja Atene i koji je slavni makedonski vojskovođa kasnije osvojio područja sve do rijeke Ind na istoku?", answer: "Razdoblje: Zlatno doba Atene.\nVojskovođa: Aleksandar Veliki." }
+                ]
+            },
+            {
+                category: "Rimski svijet",
+                questions: [
+                    { points: 100, question: "Na kojim se kontinentima prostirala Rimska država?", answer: "Europa, Afrika i Azija." },
+                    { points: 200, question: "Kako nazivamo područje koje su Rimljani osvojili izvan Apeninskog poluotoka? Kako su nazivali glavni gradski trg?", answer: "Osvojeno područje: Provincija.\nGradski trg: Forum." },
+                    { points: 300, question: "Koje su dvije kulture najviše utjecale na razvoj rimskog društva i kulture?", answer: "Grčka i etruščanska kultura." },
+                    { points: 400, question: "Kako se naziva širenje rimske kulture, jezika i običaja? Navedi dva rimska spomenika na tlu Hrvatske.", answer: "Širenje: Romanizacija.\nSpomenici: Arena u Puli, Dioklecijanova palača u Splitu." },
+                    { points: 500, question: "Tko je bio prvi rimski car? Kada započinje razdoblje Carstva? Što je legija?", answer: "Prvi car: August (Oktavijan).\nPočetak carstva: 27. g. pr. Kr.\nLegija: Temeljna jedinica rimske vojske." }
+                ]
+            }
+        ];
+
+        let scores = { A: 0, B: 0, C: 0, D: 0 };
+        let activeQuestion = null;
+        let activeTile = null;
+
+        function initBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            quizData.forEach(cat => {
+                const header = document.createElement('div');
+                header.className = 'bg-blue-900 border border-blue-500/50 p-3 rounded-t-lg text-center font-bold text-amber-300 text-sm md:text-base flex items-center justify-center shadow min-h-[60px]';
+                header.innerText = cat.category;
+                board.appendChild(header);
+            });
+
+            for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
+                quizData.forEach((cat, catIndex) => {
+                    const qData = cat.questions[rowIndex];
+                    const tile = document.createElement('button');
+                    tile.className = 'bg-slate-800 border border-slate-700 hover:border-amber-400 hover:bg-slate-700 text-amber-400 font-extrabold text-xl md:text-2xl p-4 rounded-lg flex items-center justify-center transition-all duration-200 shadow cursor-pointer min-h-[70px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-slate-800';
+                    tile.innerText = qData.points;
+                    tile.id = `tile-${catIndex}-${rowIndex}`;
+                    
+                    tile.onclick = () => openQuestion(catIndex, rowIndex, tile);
+                    board.appendChild(tile);
+                });
+            }
+        }
+
+        function openQuestion(catIndex, qIndex, tileElement) {
+            activeQuestion = quizData[catIndex].questions[qIndex];
+            activeTile = tileElement;
+
+            document.getElementById('modalCategory').innerText = quizData[catIndex].category;
+            document.getElementById('modalPoints').innerText = `${activeQuestion.points} Bodova`;
+            document.getElementById('modalQuestion').innerText = activeQuestion.question;
+
+            document.getElementById('answerBox').classList.add('hidden');
+            document.getElementById('answerBox').innerText = '';
+            document.getElementById('actionButtons').classList.remove('hidden');
+            document.getElementById('scoreButtons').classList.add('hidden');
+
+            document.getElementById('questionModal').classList.remove('hidden');
+        }
+
+        function showAnswer() {
+            document.getElementById('answerBox').innerText = activeQuestion.answer;
+            document.getElementById('answerBox').classList.remove('hidden');
+            document.getElementById('actionButtons').classList.add('hidden');
+            document.getElementById('scoreButtons').classList.remove('hidden');
+        }
+
+        function awardPoints(team) {
+            scores[team] += activeQuestion.points;
+            updateScoresUI();
+            closeModal();
+        }
+
+        function changeTeamScore(team, amount) {
+            scores[team] += amount;
+            updateScoresUI();
+        }
+
+        function updateScoresUI() {
+            document.getElementById('scoreA').innerText = scores.A;
+            document.getElementById('scoreB').innerText = scores.B;
+            document.getElementById('scoreC').innerText = scores.C;
+            document.getElementById('scoreD').innerText = scores.D;
+        }
+
+        function closeModal() {
+            if (activeTile) {
+                activeTile.disabled = true;
+                activeTile.classList.add('line-through');
+            }
+            document.getElementById('questionModal').classList.add('hidden');
+        }
+
+        function resetGame() {
+            scores = { A: 0, B: 0, C: 0, D: 0 };
+            updateScoresUI();
+            initBoard();
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
